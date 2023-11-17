@@ -1,0 +1,84 @@
+---
+import { getProductByHandle } from "../../utils/shopify";
+import { setCache } from "../../utils/cache";
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import NotFoundLayout from "../../layouts/NotFoundLayout.astro";
+// import AddToCartForm from "../../components/product/AddToCartForm.svelte";
+import ProductImageGallery from "../../components/product/ProductImageGallery.astro";
+import ProductBreadcrumb from "../../components/product/ProductBreadcrumb.astro";
+import ProductInformations from "../../components/product/ProductInformations.astro";
+import ProductRecommendations from "../../components/product/ProductRecommendations.astro";
+import ProductReviews from "../../components/product/ProductReviews.astro";
+import ProductAccordions from "../../components/product/ProductAccordions.astro";
+
+const { handle } = Astro.params;
+const headers = Astro.request.headers;
+const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
+const product = await getProductByHandle({
+  handle: handle || "",
+  buyerIP: ip,
+  shopifyShop: "storyblok-astro.myshopify.com",
+  publicShopifyAccessToken: "37d4db57f9927c0a111cc39a9cfabff7",
+});
+
+if (!product) {
+  Astro.response.status = 404;
+}
+
+let meta = {
+  title: `Incresco Technology Solutions | Shopify `,
+  description: "Shopify",
+};
+
+const firstVariant = product?.variants.nodes[0];
+setCache.short(Astro);
+---
+
+{
+  !product ? (
+    <NotFoundLayout title="Product not found" message="Product not found" />
+  ) : (
+    <BaseLayout meta={meta} title={product.title}>
+      <div class="container pt-6">
+        <ProductBreadcrumb title={product.title} />
+      </div>
+
+      <section class="container">
+        <div class="pb-16 pt-6 lg:grid lg:grid-cols-12 lg:gap-20">
+          <div class="lg:col-span-7">
+            <ProductImageGallery images={product.images} />
+          </div>
+
+          <div class="mt-8 lg:col-span-5 lg:mt-0">
+            <ProductInformations
+              title={product.title}
+              price={firstVariant?.price}
+            />
+
+            {/*<div>
+              <AddToCartForm
+                client:load
+                variantId={firstVariant?.id}
+                variantQuantityAvailable={firstVariant?.quantityAvailable}
+                variantAvailableForSale={firstVariant?.availableForSale}
+              />
+            </div>*/}
+
+            <div class="mt-8">
+              <ProductAccordions />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="container">
+        <ProductReviews />
+      </section>
+
+      <section class="container">
+        <ProductRecommendations productId={product.id} buyerIP={ip} />
+      </section>
+    </BaseLayout>
+  )
+}

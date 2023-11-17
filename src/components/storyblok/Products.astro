@@ -1,0 +1,46 @@
+---
+import { storyblokEditable } from "@storyblok/astro";
+import { getProducts } from "../../utils/shopify";
+import { setCache } from "../../utils/cache";
+import ProductCard from "./ProductCard.astro";
+
+const title = "Astro";
+const headers = Astro.request.headers;
+const ip = headers.get("x-vercel-forwarded-for") || Astro.clientAddress;
+
+const { blok } = Astro?.props;
+
+const { storeDomain, storefrontAccessToken } = blok;
+
+const products = await getProducts({
+  buyerIP: ip,
+  limit: 5,
+  shopifyShop: storeDomain,
+  publicShopifyAccessToken: storefrontAccessToken,
+});
+setCache.short(Astro);
+---
+
+<div {...storyblokEditable(blok)}>
+  <section class="bg-white">
+    <div class="container mx-auto flex items-center flex-wrap pb-12">
+      <nav id="store" class="w-full z-30 top-0 px-6 py-1">
+        <div
+          class="w-full container mx-auto flex flex-wrap justify-center mt-0 px-2 py-5"
+        >
+          <a
+            class="uppercase text-center tracking-wide no-underline hover:no-underline font-bold text-gray-800 text-xl"
+            href="#"
+          >
+            Products
+          </a>
+        </div>
+      </nav>
+      <div class="mx-auto">
+        <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => <ProductCard product={product} />)}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

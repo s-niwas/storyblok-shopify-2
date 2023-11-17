@@ -1,0 +1,13 @@
+---
+const { price } = Astro.props;
+
+const formatPrice = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: price.currencyCode,
+  currencyDisplay: price.showCurrency ? "symbol" : "narrowSymbol",
+}).format(parseFloat(price.amount));
+---
+
+<span>
+  {formatPrice}
+</span>

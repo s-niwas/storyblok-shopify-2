@@ -1,0 +1,24 @@
+---
+import { getStory } from "../components/api/getStory";
+import Header from "../components/global-components/Header.astro";
+import Footer from "../components/global-components/Footer.astro";
+
+const header = await getStory({ slug: "global-components/header" });
+const footer = await getStory({ slug: "global-components/footer" });
+
+const { meta } = Astro.props;
+---
+
+<html lang="en" class="translated-ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>{meta.title}</title>
+  </head>
+  <body class="container px-5 md:mx-auto">
+    <Header blok={header} />
+    <slot />
+    <Footer blok={footer} />
+  </body>
+</html>

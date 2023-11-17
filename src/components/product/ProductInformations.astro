@@ -1,0 +1,23 @@
+---
+import Money from "./Money.astro";
+
+const { price, title } = Astro.props;
+---
+
+<h1 class="text-2xl font-bold text-zinc-800 sm:text-4xl">
+  {title}
+</h1>
+<p class="mt-4 text-3xl font-bold text-emerald-900">
+  <Money price={price} />
+</p>
+
+<div class="mt-4">
+  <div class="mt-6">
+    <p class="text-base text-zinc-900">
+      It is very important for the customer to pay attention to the adipiscing
+      process. We can escape the pain of the said things, it's very laborious,
+      the whole thing is normal, other things happen with time, something, some
+      mistake, someone even rougher
+    </p>
+  </div>
+</div>

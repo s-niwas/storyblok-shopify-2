@@ -1,0 +1,34 @@
+---
+import { useStoryblokApi } from "@storyblok/astro";
+import StoryblokComponent from "@storyblok/astro/StoryblokComponent.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getStory } from "../components/api/getStory";
+
+export async function getStaticPaths() {
+  const storyblokApi = useStoryblokApi();
+  const { data } = await storyblokApi?.get("cdn/links", {
+    version: "draft",
+  });
+  let links = data?.links;
+  links = Object.values(links);
+  return links?.map((link) => {
+    return {
+      params: {
+        slug: link.slug === "home" ? undefined : link.slug,
+      },
+    };
+  });
+}
+const { slug } = Astro?.params;
+
+const story = await getStory({ slug: `${slug === undefined ? "home" : slug}` });
+
+let meta = {
+  title: `Incresco Technology Solutions | Shopify `,
+  description: "Shopify",
+};
+---
+
+<BaseLayout meta={meta}>
+  <StoryblokComponent blok={story} />
+</BaseLayout>
